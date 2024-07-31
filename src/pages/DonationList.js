@@ -13,7 +13,7 @@ const DonationList = () => {
       amount: 15000,
       goal: 30000,
       image: 'https://via.placeholder.com/600x200',
-      timestamp: Date.now() + 24 * 60 * 60 * 1000, // 1 day from now
+      timestamp: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days from now
     },
     {
       title: 'We want to build elementary school in XX area',
@@ -21,7 +21,7 @@ const DonationList = () => {
       amount: 8000,
       goal: 20000,
       image: 'https://via.placeholder.com/600x200',
-      timestamp: Date.now() + 48 * 60 * 60 * 1000, // 2 days from now
+      timestamp: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days from now
     },
   ]);
   const [selectedDonation, setSelectedDonation] = useState(null);
@@ -33,7 +33,7 @@ const DonationList = () => {
   };
 
   const handleAddDonation = (newDonation) => {
-    newDonation.timestamp = Date.now() + 24 * 60 * 60 * 1000; // Add a default time limit of 1 day
+    newDonation.timestamp = Date.now() + 30 * 24 * 60 * 60 * 1000; // Add a default time limit of 30 days
     setDonations([...donations, newDonation]);
     setShowForm(false);
   };

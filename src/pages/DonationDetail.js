@@ -29,6 +29,10 @@ const DonationDetail = ({ donation, onBack }) => {
     borderColor: '#365E32',
   };
 
+  if (!donation) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="donation-detail container mt-4">
       <Button 
@@ -39,16 +43,16 @@ const DonationDetail = ({ donation, onBack }) => {
       >
         Back to List
       </Button>
-      <h1>{donation.title}</h1>
+      <h1>{donation.title ? donation.title : "No Title Available"}</h1>
       
       <section className="project-overview mb-4">
         <h2>Project Overview</h2>
-        <p>{donation.description}</p>
+        <p>{donation.description ? donation.description : "No Description Available"}</p>
       </section>
 
       <section className="donation-info mb-4">
         <h2>Project Information</h2>
-        <p><strong>Total Lagooned:</strong> {donation.amount} ISLM / {donation.goal} ISLM Oceaned</p>
+        <p><strong>Total Lagooned:</strong> {donation.amount ? donation.amount : "N/A"} ISLM / {donation.goal ? donation.goal : "N/A"} ISLM Oceaned</p>
         <p><strong>Number of Donors:</strong> XX</p>
         <ul>
           <li>We appreciate that you want to help us. For that, we will give you a reward of:</li>
