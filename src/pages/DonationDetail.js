@@ -88,6 +88,19 @@ const DonationDetail = ({ donation, onBack }) => {
           Share Link
         </Button>
       </section>
+
+      <section className="donors mt-4">
+        <h2>Donors</h2>
+        <ul>
+          {donation.donors ? donation.donors.map((donor, index) => (
+            <li key={index}>
+              <p><strong>Time:</strong> {donor.time}</p>
+              <p><strong>Wallet Address:</strong> {donor.walletAddress}</p>
+              <p><strong>Amount:</strong> {donor.amount} ISLM</p>
+            </li>
+          )) : <p>No donors yet.</p>}
+        </ul>
+      </section>
     </div>
   );
 }
