@@ -1,32 +1,59 @@
 import React from 'react';
 import { useAccount } from 'wagmi';
 import { Button, Alert } from 'react-bootstrap';
+import { FaFacebookF, FaWhatsapp, FaInstagram, FaLink, FaTwitter } from 'react-icons/fa';
 
 const DonationDetail = ({ donation, onBack }) => {
   const { isConnected } = useAccount();
 
-  const handleShare = () => {
+  const handleShare = (platform) => {
     const donationLink = window.location.href; // Adjust the link if needed
-    navigator.clipboard.writeText(donationLink).then(() => {
-      alert('Link copied to clipboard!');
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
-    });
+    const message = `Check out this donation opportunity: ${donationLink}`;
+
+    switch (platform) {
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(donationLink)}`, '_blank');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`, '_blank');
+        break;
+      case 'instagram':
+        navigator.clipboard.writeText(donationLink).then(() => {
+          alert('Link copied to clipboard! You can now paste it in your Instagram bio or story.');
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+        break;
+      default:
+        navigator.clipboard.writeText(donationLink).then(() => {
+          alert('Link copied to clipboard!');
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+        break;
+    }
   };
 
-  const buttonStyle = {
-    backgroundColor: '#40A578', // light green color
-    borderColor: '#40A578',
+  const iconButtonStyle = {
+    backgroundColor: '#40A578',
+    border: 'none',
     color: '#fff',
-    transition: 'background-color 0.3s, border-color 0.3s',
-    padding: '5px 10px',
-    fontSize: '14px',
-    marginBottom: '10px',
+    borderRadius: '50%',
+    width: '40px',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 5px',
+    transition: 'background-color 0.3s',
+    fontSize: '18px',
   };
 
   const hoverStyle = {
-    backgroundColor: '#365E32', // darker shade of light green for hover effect
-    borderColor: '#365E32',
+    backgroundColor: '#365E32',
   };
 
   if (!donation) {
@@ -37,9 +64,9 @@ const DonationDetail = ({ donation, onBack }) => {
     <div className="donation-detail container mt-4">
       <Button 
         onClick={onBack} 
-        style={{ ...buttonStyle, width: 'auto' }}
+        style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px' }}
         onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
-        onMouseOut={e => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+        onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
       >
         Back to List
       </Button>
@@ -67,9 +94,9 @@ const DonationDetail = ({ donation, onBack }) => {
         {isConnected ? (
           <Button 
             className="donate-button mb-2" 
-            style={{ ...buttonStyle, width: 'auto' }}
+            style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px' }}
             onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
           >
             Donate Now
           </Button>
@@ -78,15 +105,53 @@ const DonationDetail = ({ donation, onBack }) => {
             Please connect your wallet to donate.
           </Alert>
         )}
-        <Button 
-          onClick={handleShare} 
-          className="share-button" 
-          style={{ ...buttonStyle, width: 'auto' }}
-          onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
-          onMouseOut={e => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
-        >
-          Share Link
-        </Button>
+        <div className="social-share-buttons d-flex justify-content-start mt-3">
+          <button 
+            onClick={() => handleShare('facebook')} 
+            className="share-button" 
+            style={iconButtonStyle}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
+          >
+            <FaFacebookF />
+          </button>
+          <button 
+            onClick={() => handleShare('whatsapp')} 
+            className="share-button" 
+            style={iconButtonStyle}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
+          >
+            <FaWhatsapp />
+          </button>
+          <button 
+            onClick={() => handleShare('twitter')} 
+            className="share-button" 
+            style={iconButtonStyle}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
+          >
+            <FaTwitter />
+          </button>
+          <button 
+            onClick={() => handleShare('instagram')} 
+            className="share-button" 
+            style={iconButtonStyle}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
+          >
+            <FaInstagram />
+          </button>
+          <button 
+            onClick={() => handleShare()} 
+            className="share-link-button" 
+            style={iconButtonStyle}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
+          >
+            <FaLink />
+          </button>
+        </div>
       </section>
 
       <section className="donors mt-4">
