@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import DonationList from './DonationList';
 import Head from 'next/head';
 import Wallet from './wallet';
+import Documentation from './documentation';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('home');
@@ -41,6 +42,14 @@ const App: React.FC = () => {
                   onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
                   onMouseOut={(e) => e.currentTarget.style.backgroundColor = ''}>
                   Lagoon List
+                </Nav.Link>
+                <Nav.Link 
+                  eventKey="documentation" 
+                  className="text-white px-3" 
+                  style={{ cursor: 'pointer', transition: 'background-color 0.3s ease, color 0.3s ease', borderRadius: '5px' }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = ''}>
+                  Documentation
                 </Nav.Link>
               </Nav>
               <div className="ml-auto">
@@ -89,6 +98,7 @@ const App: React.FC = () => {
         )}
 
         {currentView === 'donation-list' && <DonationList />}
+        {currentView === 'documentation' && <Documentation />}
       </main>
 
       <footer className="text-white p-3 mt-5 bg-success shadow-sm">

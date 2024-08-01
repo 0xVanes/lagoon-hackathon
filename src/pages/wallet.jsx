@@ -1,5 +1,5 @@
 import { useAccount, useBalance } from 'wagmi';
-import { useIsMounted } from '../hooks/useIsMounted';
+import { useIsMounted } from '../hooks/useisMounted';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 
