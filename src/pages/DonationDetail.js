@@ -63,24 +63,6 @@ const DonationDetail = ({ donation, onBack }) => {
         backgroundColor: '#365E32',
     };
 
-    const validateProposalId = async (_proposalId) => {
-        try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-
-            const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, signer);
-
-            const [executed, expired] = await proposalContract.getProposalStatus(_proposalId);
-            console.log('Proposal Executed:', executed);
-            console.log('Proposal Expired:', expired);
-
-            return !executed && !expired;
-        } catch (error) {
-            console.error('Error validating proposal ID:', error);
-            return false;
-        }
-    };
-
     const handleDonate = async () => {
         try {
             if (!isConnected) {
@@ -125,19 +107,7 @@ const DonationDetail = ({ donation, onBack }) => {
             console.error('Error during donation:', error);
 
             let errorMessage = 'Donation failed.';
-            if (error.code === 'INSUFFICIENT_FUNDS') {
-                errorMessage = 'Insufficient funds for gas.';
-            } else if (error.code === 'NETWORK_ERROR') {
-                errorMessage = 'Network error. Please check your connection.';
-            } else if (error.code === 'ACTION_REJECTED') {
-                errorMessage = 'Transaction was rejected. Please confirm the transaction to proceed.';
-            } else if (error.reason) {
-                errorMessage = error.reason;
-            } else if (error.error && error.error.message) {
-                errorMessage = error.error.message;
-            } else {
-                errorMessage = error.message;
-            }
+
 
             setMessage(errorMessage);
         }
