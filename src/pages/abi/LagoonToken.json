@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "LagoonToken",
-  "tokenAddress": "0x9626644e6322168f9b120CF17Bb048445cf18fc7",
+  "tokenAddress": "0x7757530063ac31c0691F062fCF333BF757479841",
   "sourceName": "contracts/lagoonToken.sol",
   "tokenAbi": [
     {

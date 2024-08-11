@@ -93,6 +93,7 @@ const DonationForm = ({ onSubmit }) => {
       setGoal('');
       setWalletAddress('');
       setMessage('Proposal created successfully!');
+      fetchProposals();
     } catch (error) {
       console.error('Error in form submission:', error);
     }

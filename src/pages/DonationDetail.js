@@ -5,6 +5,7 @@ import { FaFacebookF, FaWhatsapp, FaInstagram, FaLink, FaTwitter } from 'react-i
 import { ethers } from 'ethers';
 import proposalData from './abi/Proposal.json';
 import lagoonTokenData from './abi/LagoonToken.json';
+import lgnNftData from './abi/lgnNft.json';
 
 const DonationDetail = ({ donation, onBack }) => {
     const { isConnected, address } = useAccount();
@@ -17,6 +18,9 @@ const DonationDetail = ({ donation, onBack }) => {
 
     const lagoonTokenAbi = lagoonTokenData.tokenAbi;
     const lagoonTokenAddress = lagoonTokenData.tokenAddress;
+
+    const lagoonNftAbi = lgnNftData.nftAbi;
+    const lagoonNftAddress = lgnNftData.nftAddress;
 
     useEffect(() => {
         if (isConnected && donation?.id) {
@@ -91,10 +95,22 @@ const DonationDetail = ({ donation, onBack }) => {
             const signer = provider.getSigner();
     
             const lagoonTokenContract = new ethers.Contract(lagoonTokenAddress, lagoonTokenAbi, signer);
-    
-            console.log('Attempting to distribute tokens...');
-    
-            const tx = await lagoonTokenContract.distributeTokens(address, ethers.utils.parseEther(donationAmount), {
+            
+            let tokensToReceive = 0;
+
+            if (parseFloat(donationAmount) < 1100) {
+                tokensToReceive = 10;
+            } else if (parseFloat(donationAmount) < 2200) {
+                tokensToReceive = 20;
+            } else if (parseFloat(donationAmount) < 5500) {
+                tokensToReceive = 50;
+            } else {
+                tokensToReceive = 100;
+            }
+
+            console.log(`Distributing ${tokensToReceive} Lagoon tokens...`);
+        
+            const tx = await lagoonTokenContract.distributeTokens(address, ethers.utils.parseEther(tokensToReceive.toString()), {
                 gasLimit: 500000, 
             });
     
@@ -111,6 +127,49 @@ const DonationDetail = ({ donation, onBack }) => {
         } catch (error) {
             console.error('Error during token distribution:', error);
             setMessage('Token distribution failed.');
+        }
+    };  
+    
+    const handleReceiveNft = async () => {
+        try {
+            if (!isConnected) {
+                setMessage('Please connect your wallet first');
+                return;
+            }
+    
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send('eth_requestAccounts', []);
+            const signer = provider.getSigner();
+    
+            const lagoonNftContract = new ethers.Contract(lagoonNftAddress, lagoonNftAbi, signer);
+    
+            // Determine lagoonType based on the donationAmount
+            let lagoonType = "Regular"; // Default to Regular
+            if (parseFloat(donationAmount) > 1100 && parseFloat(donationAmount) <= 2200) {
+                lagoonType = "Gold";
+            } else if (parseFloat(donationAmount) > 2200) {
+                lagoonType = "Diamond";
+            }
+    
+            console.log(`Minting ${lagoonType} NFT for donation amount:`, donationAmount);
+    
+            const tx = await lagoonNftContract.mintNFT(address, lagoonType, {
+                gasLimit: 500000, 
+            });
+    
+            console.log('Transaction submitted:', tx.hash);
+    
+            const receipt = await tx.wait();
+            console.log('Transaction receipt:', receipt);
+    
+            if (receipt.status === 1) {
+                setMessage(`${lagoonType} NFT minted successfully!`);
+            } else {
+                setMessage(`${lagoonType} NFT minting failed. Please try again.`);
+            }
+        } catch (error) {
+            console.error('Error during NFT minting:', error);
+            setMessage('NFT minting failed.');
         }
     };    
 
@@ -264,6 +323,11 @@ const DonationDetail = ({ donation, onBack }) => {
                             onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
                             onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleReceiveTokens}>
                             Receive Lagoon Tokens
+                        </Button>
+                        <Button className="nft-button mb-2" style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px' }}
+                            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+                            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleReceiveNft}>
+                            Receive NFT
                         </Button>
                         <Button className="withdraw-button mb-2" style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px', marginLeft: '5px' }}
                             onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
