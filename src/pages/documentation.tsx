@@ -50,6 +50,7 @@ const Documentation: React.FC = () => {
               <ul>
                 <li>Users should be able to register using their email or social media accounts.</li>
                 <li>Users should authenticate using wallet integration (e.g., MetaMask).</li>
+                <li>We are considering KYC to prevent user from making multiple accounts.</li>
               </ul>
             </li>
             <li><strong>Wallet Integration</strong>
@@ -72,7 +73,7 @@ const Documentation: React.FC = () => {
             </li>
             <li><strong>Incentive Mechanism</strong>
               <ul>
-                <li>Issue NFTs or tokens to donors as incentives. NFT can only be minted every 30 days to prevent dishonesty in transaction.</li>
+                <li>Issue NFTs or tokens to donors as incentives. NFT can only be minted every 30 days to prevent multiple minting.</li>
                 <li>Provide different tiers of NFTs/tokens based on donation amounts.</li>
                 <li>Less than or equals to 1100 ISLM will get the regular NFT.</li>
                 <li>More than 1100 ISLM and less than 2200 ISLM will get the gold NFT.</li>
@@ -241,12 +242,10 @@ const Documentation: React.FC = () => {
                 <li>Launch the dApp and conduct initial user testing.</li>
               </ul>
             </li>
-            <li><strong>THE NEXT STEP, WE ARE GOING TO CHANGE IT TO DAO</strong>
+            <li><strong>THE NEXT STEP, WE ARE GOING TO MAKE A VOTING SYSTEM (DAO)</strong>
               <ul>
                 <li>To provide better security and more decentralized waqf.</li>
                 <li>Anyone can give a donation proposals and the voting mechanism will run for 30 days. If 51% voters voted YES, then the proposal will be posted on the Lagoon List.</li>
-                <li>Add KYC, to prevent a user from registering multiple accounts to vote themselves.</li>
-                <li>We are considering the use of ZK-proof for a more secure, private and transparent waqf</li>
               </ul>
             </li>
           </ul>
@@ -265,7 +264,6 @@ const Documentation: React.FC = () => {
           <p>
             The Lagoon tokenomics is structured to incentivize participation and ensure sustainability. Our community coins are used for transactions, rewards, and governance, creating a balanced and equitable economic system.
           </p>
-          <p>For every 10 token used to vote 1 contract, they will lose the 10 token to prevent them from reusing it on another contract.</p>
         </div>
       ),
     },

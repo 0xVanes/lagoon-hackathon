@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DonationList from './DonationList';
+import VotingList from './VotingList';
 import Head from 'next/head';
 import Wallet from './wallet';
 import Documentation from './documentation';
@@ -51,6 +52,13 @@ const App: React.FC = () => {
                   style={{ cursor: 'pointer' }}
                 >
                   Lagoon List
+                </Nav.Link>
+                <Nav.Link
+                  eventKey="voting-list"
+                  className="text-white px-3 nav-item-hover"
+                  style={{ cursor: 'pointer' }}
+                >
+                  Voting
                 </Nav.Link>
                 <Nav.Link
                   eventKey="documentation"
@@ -131,6 +139,7 @@ const App: React.FC = () => {
         )}
 
         {currentView === 'donation-list' && <DonationList />}
+        {currentView === 'voting-list' && <VotingList />}
         {currentView === 'documentation' && <Documentation />}
       </main>
 
