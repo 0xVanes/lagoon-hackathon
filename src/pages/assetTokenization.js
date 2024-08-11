@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { Button, Form, Alert } from 'react-bootstrap';
-import votingData from './abi/Voting.json'; // ABI for the Voting contract
-import assetTokenizationData from './abi/AssetTokenization.json'; // ABI for the AssetTokenization contract
+import votingData from './abi/Voting.json';
+import assetTokenizationData from './abi/AssetTokenization.json';
 
 const { votingAbi, votingAddress } = votingData;
 const { assetTokenizationAbi, assetTokenizationAddress } = assetTokenizationData;
@@ -26,17 +26,16 @@ const AssetTokenization = ({ fetchProposals }) => {
       const signer = provider.getSigner();
       const votingContract = new ethers.Contract(votingAddress, votingAbi, signer);
 
-      // Propose the asset for voting
       const tx = await votingContract.createProposal(
         `Tokenize Asset: ${name}`, 
         `Asset Type: ${assetType}, URI: ${uri}`, 
-        0, // No funding required, only approval
+        0,
         signer.getAddress()
       );
       await tx.wait();
 
       setMessage('Asset proposal created. Waiting for community approval.');
-      fetchProposals(); // Refresh the proposals list
+      fetchProposals();
     } catch (error) {
       console.error('Error proposing asset:', error);
       setMessage('Failed to create asset proposal.');

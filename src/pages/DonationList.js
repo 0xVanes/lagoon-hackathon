@@ -174,7 +174,7 @@ const DonationList = () => {
                       variant="top"
                       src={donation.image}
                       alt={`Image for ${donation.title}`}
-                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} // Inline style to reduce image size
+                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }}
                     />
                     <Card.Body>
                       <Card.Title>{donation.title}</Card.Title>
@@ -209,7 +209,7 @@ const DonationList = () => {
                           variant="top"
                           src={donation.image}
                           alt={`Image for ${donation.title}`}
-                          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} // Inline style to reduce image size
+                          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }}
                         />
                         <Card.Body>
                           <Card.Title>{donation.title}</Card.Title>

@@ -143,8 +143,7 @@ const DonationDetail = ({ donation, onBack }) => {
     
             const lagoonNftContract = new ethers.Contract(lagoonNftAddress, lagoonNftAbi, signer);
     
-            // Determine lagoonType based on the donationAmount
-            let lagoonType = "Regular"; // Default to Regular
+            let lagoonType = "Regular";
             if (parseFloat(donationAmount) > 1100 && parseFloat(donationAmount) <= 2200) {
                 lagoonType = "Gold";
             } else if (parseFloat(donationAmount) > 2200) {

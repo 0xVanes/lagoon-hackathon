@@ -18,7 +18,6 @@ const VotingList = () => {
     }, []);
 
     useEffect(() => {
-        // Filter proposals based on search query
         setFilteredProposals(
             proposals.filter((proposal) =>
                 proposal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -51,7 +50,7 @@ const VotingList = () => {
                 });
             }
             setProposals(proposalsArray);
-            setFilteredProposals(proposalsArray); // Initialize with all proposals
+            setFilteredProposals(proposalsArray);
         } catch (error) {
             console.error('Error fetching proposals:', error);
         }
@@ -69,7 +68,6 @@ const VotingList = () => {
             });
             await tx.wait();
 
-            // Optimistically update UI
             setProposals((prevProposals) => 
                 prevProposals.map(p => 
                     p.id === proposalId 
@@ -99,7 +97,6 @@ const VotingList = () => {
             });
             await tx.wait();
 
-            // Optimistically update UI
             setProposals((prevProposals) => 
                 prevProposals.map(p => 
                     p.id === proposalId ? { ...p, executed: true } : p)

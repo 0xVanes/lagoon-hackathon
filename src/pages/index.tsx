@@ -15,14 +15,13 @@ const App: React.FC = () => {
   const [showSignIn, setShowSignIn] = useState(true);
 
   const fetchProposals = async () => {
-    // Return an empty array or mock proposals
     return [];
   };
 
   const handleNavSelect = (selectedKey: string | null) => {
     if (selectedKey) {
       setCurrentView(selectedKey);
-      setExpanded(false); // Collapse the navbar after selecting a link
+      setExpanded(false);
     }
   };
 
@@ -62,7 +61,6 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Simulate a fetch call to show loading spinner
     setTimeout(() => {
       setLoading(false);
     }, 2000);
