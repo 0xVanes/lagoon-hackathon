@@ -140,7 +140,7 @@ const DonationList = () => {
   );
 
   return (
-    <div className="container mt-4">
+    <div className="container">
       <div className="d-flex justify-content-between mb-4">
         <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearch} className="mr-2" />
         <Form.Control as="select" value={filter} onChange={handleFilterChange} className="mr-2">
@@ -170,7 +170,12 @@ const DonationList = () => {
                   overlay={<Tooltip id={`tooltip-top-${index}`}>{donation.title}</Tooltip>}
                 >
                   <Card className="donation-card mb-4" onClick={() => handleSelectDonation(donation)}>
-                    <Card.Img variant="top" src={donation.image} alt={`Image for ${donation.title}`} className="donation-image" />
+                    <Card.Img
+                      variant="top"
+                      src={donation.image}
+                      alt={`Image for ${donation.title}`}
+                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} // Inline style to reduce image size
+                    />
                     <Card.Body>
                       <Card.Title>{donation.title}</Card.Title>
                       <Card.Text>{donation.description}</Card.Text>
@@ -200,7 +205,12 @@ const DonationList = () => {
                       overlay={<Tooltip id={`tooltip-top-${index}`}>{donation.title}</Tooltip>}
                     >
                       <Card className="donation-card" onClick={() => handleSelectDonation(donation)}>
-                        <Card.Img variant="top" src={donation.image} alt={`Image for ${donation.title}`} />
+                        <Card.Img
+                          variant="top"
+                          src={donation.image}
+                          alt={`Image for ${donation.title}`}
+                          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} // Inline style to reduce image size
+                        />
                         <Card.Body>
                           <Card.Title>{donation.title}</Card.Title>
                           <Card.Text>{donation.description}</Card.Text>
@@ -222,7 +232,7 @@ const DonationList = () => {
             ) : (
               <div className="d-flex flex-column align-items-center">
                 <img
-                  src="/images/logo lagoon green.png"
+                  src="/images/lagoonIconOnlyWhite.png"
                   alt="Lagoon Image"
                   style={{ maxWidth: '70%', height: 'auto', marginBottom: '20px' }}
                 />

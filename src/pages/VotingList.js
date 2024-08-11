@@ -112,7 +112,7 @@ const VotingList = () => {
     };
 
     return (
-        <div className="container mt-4">
+        <div className="container">
             <h2>Voting List</h2>
             <FormControl
                 type="text"
@@ -157,7 +157,14 @@ const VotingList = () => {
                     </Card>
                 ))
             ) : (
-                <p>No proposals found.</p>
+                <div className="d-flex flex-column align-items-center">
+                <img
+                  src="/images/lagoonIconOnlyWhite.png"
+                  alt="Lagoon Image"
+                  style={{ maxWidth: '70%', height: 'auto', marginBottom: '20px' }}
+                />
+                <p>No Voting Available</p>
+              </div>
             )}
         </div>
     );

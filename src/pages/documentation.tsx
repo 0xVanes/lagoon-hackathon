@@ -4,9 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Documentation: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
 
-  const steps = [
+  const sections = [
     {
       title: 'Lagoon: A Harmony of Community and Integrity',
       content: (
@@ -279,21 +279,75 @@ const Documentation: React.FC = () => {
         </div>
       ),
     },
+    {
+      title: 'Asset Tokenization',
+      content: (
+        <div style={{ color: '#000', lineHeight: '1.6' }}>
+          <h3>Asset Tokenization</h3>
+          <p>
+          Asset tokenization has the potential to revolutionize the concept of WAQF, an Islamic endowment traditionally used for charitable and religious purposes. By leveraging blockchain technology, WAQF can be modernized to increase transparency, accessibility, and efficiency in managing charitable assets, thereby enhancing the impact of Islamic philanthropy.
+          </p>
+          <p><strong>Understanding Waqf</strong></p>
+          <p>WAQF is a long-standing Islamic practice where an individual dedicates a portion of their wealth, such as land, buildings, or other assets, for the benefit of the community. The principal asset is preserved, and the income generated is used for charitable purposes, such as building schools, hospitals, or providing social services. Historically, managing WAQF assets has been challenging due to issues like mismanagement, lack of transparency, and limited accessibility.</p>
+          <p><strong>The Role of Asset Tokenization in Waqf</strong></p>
+          <p>Asset tokenization can address these challenges by digitizing WAQF assets and issuing tokens that represent fractional ownership or benefit rights. These tokens are recorded on a blockchain, ensuring secure, transparent, and immutable records of ownership and transactions. How asset tokenization can transform Waqf:
+            <li><strong>Enhanced Transparency and Accountability:</strong>Blockchain technology provides a transparent ledger of all transactions related to WAQF assets. Donors and stakeholders can easily track how the funds or assets are being used, ensuring that the WAQF is managed according to Islamic principles and the wishes of the endower.</li>
+            <li><strong>Automated Management through Smart Contracts:</strong> Smart contracts can be used to automate the management of WAQF assets. For instance, the income generated from a WAQF property could be automatically distributed to designated beneficiaries according to predefined rules. This reduces the administrative burden and ensures that the WAQF operates efficiently and in accordance with the endowers wishes.</li>
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: 'Secure Transactions',
+      content: (
+        <div style={{ color: '#000', lineHeight: '1.6' }}>
+          <h3>Secure Transactions</h3>
+          <p>
+          Ensuring secure transactions is paramount to maintain the trust of donors, beneficiaries, and the broader community. Blockchain technology inherently offers several security features, but careful implementation and management are necessary to protect the integrity of the Waqf and its assets.</p>
+          <strong>Key Security Aspects in Blockchain Transactions</strong>
+          <li><strong>Immutable Ledger:</strong>The core feature of blockchain is its immutable ledger, where all transactions are recorded permanently and cannot be altered. This ensures that once a transaction is made—whether it is the donation of an asset, the issuance of tokens, or the distribution of funds—it is securely recorded and visible to all participants.</li>
+          <li><strong>Decentralization:</strong>The decentralized nature of blockchain reduces the risk of a single point of failure. This means that the WAQF assets are not controlled by a single entity, which helps prevent fraud and ensures that the assets are managed transparently.</li>
+        </div>
+      ),
+    },
+    {
+      title: 'Low Fees',
+      content: (
+        <div style={{ color: '#000', lineHeight: '1.6' }}>
+          <h3>Low Fees</h3>
+          <p>
+          The HAQQ network, designed with ethical finance and Islamic principles in mind, provides a blockchain platform that is both secure and efficient. To maximize the impact of Waqf assets on this network, minimizing transaction fees is essential. 
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: 'Global Reach',
+      content: (
+        <div style={{ color: '#000', lineHeight: '1.6' }}>
+          <h3>Global Reach</h3>
+          <p>
+          Tokenization allows WAQF to attract contributions from a global audience, not just from the local community. This can lead to larger pools of resources being dedicated to charitable causes, significantly amplifying the impact of the WAQF.</p>
+        </div>
+      ),
+    },
   ];
 
-  const filteredSteps = steps.filter(step =>
-    step.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSections = sections.filter(section =>
+    section.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const nextStep = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+  const currentSection = filteredSections[currentSectionIndex];
+
+  const nextSection = () => {
+    if (currentSectionIndex < filteredSections.length - 1) {
+      setCurrentSectionIndex(currentSectionIndex + 1);
     }
   };
 
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+  const prevSection = () => {
+    if (currentSectionIndex > 0) {
+      setCurrentSectionIndex(currentSectionIndex - 1);
     }
   };
 
@@ -310,33 +364,33 @@ const Documentation: React.FC = () => {
             className="mb-3"
           />
           <ListGroup variant="flush">
-            {filteredSteps.map((step, index) => (
+            {filteredSections.map((section, index) => (
               <ListGroup.Item
                 key={index}
                 action
-                onClick={() => setCurrentStep(index)}
-                active={index === currentStep}
+                onClick={() => setCurrentSectionIndex(index)}
+                active={index === currentSectionIndex}
                 style={{
-                  backgroundColor: index === currentStep ? '#28a745' : 'transparent',
-                  color: index === currentStep ? '#fff' : '#000',
+                  backgroundColor: index === currentSectionIndex ? '#28a745' : 'transparent',
+                  color: index === currentSectionIndex ? '#fff' : '#000',
                   border: 'none',
                   cursor: 'pointer'
                 }}
               >
-                {step.title}
+                {section.title}
               </ListGroup.Item>
             ))}
           </ListGroup>
         </Col>
         <Col md={9} className="p-4" style={{ backgroundColor: '#fff' }}>
-          <h2 style={{ color: '#28a745' }}>{steps[currentStep].title}</h2>
-          {steps[currentStep].content}
-          <ProgressBar variant="success" now={((currentStep + 1) / steps.length) * 100} className="mt-4" />
+          <h2 style={{ color: '#28a745' }}>{currentSection.title}</h2>
+          {currentSection.content}
+          <ProgressBar variant="success" now={((currentSectionIndex + 1) / filteredSections.length) * 100} className="mt-4" />
           <div className="d-flex justify-content-between mt-4">
-            <Button onClick={prevStep} disabled={currentStep === 0} variant="secondary">
+            <Button onClick={prevSection} disabled={currentSectionIndex === 0} variant="secondary">
               Previous
             </Button>
-            <Button onClick={nextStep} disabled={currentStep === steps.length - 1} style={{ backgroundColor: '#28a745', borderColor: '#28a745', color: '#fff' }}>
+            <Button onClick={nextSection} disabled={currentSectionIndex === filteredSections.length - 1} style={{ backgroundColor: '#28a745', borderColor: '#28a745', color: '#fff' }}>
               Next
             </Button>
           </div>
