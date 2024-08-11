@@ -1,17 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { Button, Alert, Form } from 'react-bootstrap';
+import { Button, Alert, Form, Table } from 'react-bootstrap';
 import { FaFacebookF, FaWhatsapp, FaInstagram, FaLink, FaTwitter } from 'react-icons/fa';
 import { ethers } from 'ethers';
 import proposalData from './abi/Proposal.json';
+import lagoonTokenData from './abi/LagoonToken.json';
 
 const DonationDetail = ({ donation, onBack }) => {
     const { isConnected, address } = useAccount();
     const [donationAmount, setDonationAmount] = useState('');
     const [message, setMessage] = useState('');
+    const [donors, setDonors] = useState([]);
 
     const proposalAbi = proposalData.proposalAbi;
     const proposalAddress = proposalData.proposalAddress;
+
+    const lagoonTokenAbi = lagoonTokenData.tokenAbi;
+    const lagoonTokenAddress = lagoonTokenData.tokenAddress;
+
+    useEffect(() => {
+        if (isConnected && donation?.id) {
+            fetchDonorData();
+        }
+    }, [isConnected, donation?.id]); 
+
+    const fetchDonorData = async () => {
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, provider);
+
+            const donorCount = await proposalContract.getDonorCount(donation.id);
+            const donorsData = [];
+
+            for (let i = 0; i < donorCount; i++) {
+                const donor = await proposalContract.getDonor(donation.id, i);
+                donorsData.push({
+                    time: new Date(donor.time * 1000).toLocaleString(),
+                    walletAddress: donor.walletAddress,
+                    amount: ethers.utils.formatEther(donor.amount),
+                });
+            }
+
+            setDonors(donorsData);
+        } catch (error) {
+            console.error('Error fetching donor data:', error);
+        }
+    };
+
 
     const handleShare = (platform) => {
         const donationLink = window.location.href;
@@ -41,6 +76,76 @@ const DonationDetail = ({ donation, onBack }) => {
                     console.error('Failed to copy: ', err);
                 });
                 break;
+        }
+    };
+
+    const handleReceiveTokens = async () => {
+        try {
+            if (!isConnected) {
+                setMessage('Please connect your wallet first');
+                return;
+            }
+    
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send('eth_requestAccounts', []);
+            const signer = provider.getSigner();
+    
+            const lagoonTokenContract = new ethers.Contract(lagoonTokenAddress, lagoonTokenAbi, signer);
+    
+            console.log('Attempting to distribute tokens...');
+    
+            const tx = await lagoonTokenContract.distributeTokens(address, ethers.utils.parseEther(donationAmount), {
+                gasLimit: 500000, 
+            });
+    
+            console.log('Transaction submitted:', tx.hash);
+    
+            const receipt = await tx.wait();
+            console.log('Transaction receipt:', receipt);
+    
+            if (receipt.status === 1) {
+                setMessage('Tokens distributed successfully!');
+            } else {
+                setMessage('Token distribution failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error during token distribution:', error);
+            setMessage('Token distribution failed.');
+        }
+    };    
+
+    const handleWithdraw = async () => {
+        try {
+            if (!isConnected) {
+                setMessage('Please connect your wallet first');
+                return;
+            }
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send('eth_requestAccounts', []);
+            const signer = provider.getSigner();
+
+            const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, signer);
+
+            console.log('Attempting to withdraw funds for proposal ID:', donation.id);
+
+            const tx = await proposalContract.withdraw(donation.id, {
+                gasLimit: 500000,
+            });
+
+            console.log('Transaction submitted:', tx.hash);
+
+            const receipt = await tx.wait();
+            console.log('Transaction receipt:', receipt);
+
+            if (receipt.status === 1) {
+                setMessage('Withdrawal successful!');
+            } else {
+                setMessage('Withdrawal failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error during withdrawal:', error);
+            setMessage('Withdrawal failed.');
         }
     };
 
@@ -149,14 +254,26 @@ const DonationDetail = ({ donation, onBack }) => {
                     />
                 </Form.Group>
                 {isConnected ? (
-                    <Button className="donate-button mb-2" style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px' }}
-                        onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
-                        onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleDonate}>
-                        Donate Now
-                    </Button>
+                    <>
+                        <Button className="donate-button mb-2" style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px' }}
+                            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+                            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleDonate}>
+                            Donate Now
+                        </Button>
+                        <Button className="token-button mb-2" style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px' }}
+                            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+                            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleReceiveTokens}>
+                            Receive Lagoon Tokens
+                        </Button>
+                        <Button className="withdraw-button mb-2" style={{ ...iconButtonStyle, width: 'auto', height: 'auto', borderRadius: '5px', marginLeft: '5px' }}
+                            onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
+                            onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleWithdraw}>
+                            Withdraw Funds
+                        </Button>
+                    </>
                 ) : (
                     <Alert variant="danger" className="mt-3">
-                        Please connect your wallet to donate.
+                        Please connect your wallet to donate, withdraw or receive tokens.
                     </Alert>
                 )}
                 {message && (
@@ -186,15 +303,28 @@ const DonationDetail = ({ donation, onBack }) => {
 
             <section className="donors mt-4">
                 <h2>Donors</h2>
-                <ul>
-                    {donation?.donors && donation.donors.length > 0 ? donation.donors.map((donor, index) => (
-                        <li key={index}>
-                            <p><strong>Time:</strong> {donor.time}</p>
-                            <p><strong>Wallet Address:</strong> {donor.walletAddress}</p>
-                            <p><strong>Amount:</strong> {donor.amount} ISLM</p>
-                        </li>
-                    )) : <p>No donors yet.</p>}
-                </ul>
+                {donors.length > 0 ? (
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Wallet Address</th>
+                                <th>Amount (ISLM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {donors.map((donor, index) => (
+                                <tr key={index}>
+                                    <td>{donor.time}</td>
+                                    <td>{donor.walletAddress}</td>
+                                    <td>{donor.amount}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                ) : (
+                    <p>No donors yet.</p>
+                )}
             </section>
 
         </div>
