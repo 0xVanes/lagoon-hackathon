@@ -242,10 +242,9 @@ const Documentation: React.FC = () => {
                 <li>Launch the dApp and conduct initial user testing.</li>
               </ul>
             </li>
-            <li><strong>THE NEXT STEP, WE ARE GOING TO MAKE A VOTING SYSTEM (DAO)</strong>
+            <li><strong>3 Days Extension</strong>
               <ul>
-                <li>To provide better security and more decentralized waqf.</li>
-                <li>Anyone can give a donation proposals and the voting mechanism will run for 30 days. If 51% voters voted YES, then the proposal will be posted on the Lagoon List.</li>
+                <li>We implement better UX and added DAO voting mechanism</li>
               </ul>
             </li>
           </ul>

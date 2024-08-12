@@ -12,6 +12,8 @@ const DonationDetail = ({ donation, onBack }) => {
     const [donationAmount, setDonationAmount] = useState('');
     const [message, setMessage] = useState('');
     const [donors, setDonors] = useState([]);
+    const [raisedAmount, setRaisedAmount] = useState('0');
+    const [donorCount, setDonorCount] = useState(0);
 
     const proposalAbi = proposalData.proposalAbi;
     const proposalAddress = proposalData.proposalAddress;
@@ -25,31 +27,64 @@ const DonationDetail = ({ donation, onBack }) => {
     useEffect(() => {
         if (isConnected && donation?.id) {
             fetchDonorData();
+            fetchRaisedAmount();
+            fetchDonorCount();
         }
     }, [isConnected, donation?.id]); 
+
+    const fetchRaisedAmount = async () => {
+        try {
+            if (!donation?.id) {
+                console.error('Donation ID is not defined');
+                return;
+            }
+    
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, provider);
+            
+            console.log('Fetching raised amount for proposal ID:', donation.id);
+            const proposal = await proposalContract.getProposal(donation.id);
+
+            setRaisedAmount(ethers.utils.formatEther(proposal.balance)); // Update the state with the formatted raised amount
+        } catch (error) {
+            console.error('Error fetching raised amount:', error.message || error);
+        }
+    };
+
+    const fetchDonorCount = async () => {
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, provider);
+    
+            console.log('Fetching donor count for proposal ID:', donation.id);
+            const count = await proposalContract.getDonorCount(donation.id);
+    
+            setDonorCount(count.toNumber()); // Update the state with the donor count
+        } catch (error) {
+            console.error('Error fetching donor count:', error);
+        }
+    };
 
     const fetchDonorData = async () => {
         try {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, provider);
-
-            const donorCount = await proposalContract.getDonorCount(donation.id);
-            const donorsData = [];
-
-            for (let i = 0; i < donorCount; i++) {
-                const donor = await proposalContract.getDonor(donation.id, i);
-                donorsData.push({
-                    time: new Date(donor.time * 1000).toLocaleString(),
-                    walletAddress: donor.walletAddress,
-                    amount: ethers.utils.formatEther(donor.amount),
-                });
-            }
-
+    
+            console.log('Fetching donor data for proposal ID:', donation.id);
+            const donors = await proposalContract.getDonors(donation.id);
+    
+            const donorsData = donors.map(donor => ({
+                time: new Date(donor.time * 1000).toLocaleString(), // Convert timestamp to human-readable format
+                walletAddress: donor.walletAddress, // Donor's wallet address
+                amount: ethers.utils.formatEther(donor.amount), // Convert amount from Wei to Ether
+            }));
+    
             setDonors(donorsData);
         } catch (error) {
             console.error('Error fetching donor data:', error);
         }
     };
+    
 
 
     const handleShare = (platform) => {
@@ -290,8 +325,8 @@ const DonationDetail = ({ donation, onBack }) => {
 
             <section className="donation-info mb-4">
                 <h2>Project Information</h2>
-                <p><strong>Total Raised:</strong> {donation?.raised || "0"} ISLM / {donation?.goal || "N/A"} ISLM Goal</p>
-                <p><strong>Number of Donors:</strong> {donation?.donors ? donation.donors.length : "XX"}</p>
+                <p><strong>Total Raised:</strong> {raisedAmount} ISLM / {donation?.goal || "N/A"} ISLM Goal</p>
+                <p><strong>Number of Donors:</strong> {donorCount}</p> {/* Display the donor count */}
                 <ul>
                     <li>We appreciate that you want to help us. For that, we will give you a reward of:</li>
                     <li>1100 ISLM – Will be given 10LGN</li>
@@ -389,7 +424,6 @@ const DonationDetail = ({ donation, onBack }) => {
                     <p>No donors yet.</p>
                 )}
             </section>
-
         </div>
     );
 };

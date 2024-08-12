@@ -114,14 +114,16 @@ const DonationList = () => {
   };
 
   const calculateTimeLeft = (creationTime) => {
-    const endTime = creationTime + 30 * 24 * 60 * 60 * 1000;
+    const endTime = creationTime + 30 * 24 * 60 * 60 * 1000; 
     const timeLeft = endTime - Date.now();
+
     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    const minutes = Math.floor((timeLeft % (1000 * 60)) / (1000 * 60));
+
     return `${days}d ${hours}h ${minutes}m`;
   };
-
+  
   const filteredDonations = donations.filter((donation) => {
     if (filter === 'All') {
       return true;

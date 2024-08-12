@@ -79,7 +79,8 @@ const DonationForm = ({ onSubmit }) => {
 
     try {
       const goalInt = parseInt(goal, 10);
-      await createProposal(title, description, goalInt, walletAddress);
+      await createProposal();
+      //await createProposal(title, description, goalInt, walletAddress);
 
       onSubmit({
         title,

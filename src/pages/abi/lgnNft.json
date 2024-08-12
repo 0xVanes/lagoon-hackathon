@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "lgnNft",
-  "nftAddress": "0x4FBeb50D9cfCE11237c23D1d283Ce720EF34560F",
+  "nftAddress": "0x3Ce49272947d30e553BD265e8f1085922AF38703",
   "sourceName": "contracts/lgnNft.sol",
   "nftAbi": [
     {

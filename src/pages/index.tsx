@@ -3,7 +3,7 @@ import { Navbar, Nav, Container, Spinner, Modal, Button, Form, Row, Col } from '
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DonationList from './DonationList';
 import VotingList from './VotingList';
-import AssetTokenization from './assetTokenization';
+import RealEstateWaqf from './realEstateWaqfToken';
 import Head from 'next/head';
 import Wallet from './wallet';
 import Documentation from './documentation';
@@ -13,10 +13,6 @@ const App: React.FC = () => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [showSignIn, setShowSignIn] = useState(true);
-
-  const fetchProposals = async () => {
-    return [];
-  };
 
   const handleNavSelect = (selectedKey: string | null) => {
     if (selectedKey) {
@@ -133,7 +129,7 @@ const App: React.FC = () => {
         </Container>
       </header>
 
-      <body className="palebg">
+      <div className="palebg">
         <main className="container">
           {loading ? (
             <div className="d-flex justify-content-center">
@@ -275,7 +271,7 @@ const App: React.FC = () => {
                       <p>Phone: +123 456 7890</p>
                       
                       <h5>Address</h5>
-                      <p>123 Lagoon St., City, Country</p>
+                      <p>Lagoon Rd 20, City of Lagoon, Lagoontopia</p>
                     </Col>
                   </Row>
                 </div>
@@ -286,12 +282,12 @@ const App: React.FC = () => {
           ) : currentView === 'voting-list' ? (
             <VotingList />
           ) : currentView === 'asset-tokenization' ? (
-            <AssetTokenization fetchProposals={fetchProposals} />
+            <RealEstateWaqf />
           ) : currentView === 'documentation' ? (
             <Documentation />
           ) : null}
         </main>
-      </body>
+      </div>
 
       <footer className="text-white p-3 bg-success backwardgradient-bg">
         <div className="container text-center">
