@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Spinner, Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Navbar, Nav, Container, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DonationList from './DonationList';
 import VotingList from './VotingList';
-import RealEstateWaqf from './realEstateWaqfToken';
+import RealEstateWaqf from './realEstateWaqf';
 import Head from 'next/head';
 import Wallet from './wallet';
 import Documentation from './documentation';
@@ -12,48 +12,12 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('home');
   const [expanded, setExpanded] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const [showSignIn, setShowSignIn] = useState(true);
 
   const handleNavSelect = (selectedKey: string | null) => {
     if (selectedKey) {
       setCurrentView(selectedKey);
       setExpanded(false);
     }
-  };
-
-  const FeatureModal = ({ title, body }: { title: string; body: string }) => {
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    const handleNavigate = () => {
-      setCurrentView('documentation');
-      handleClose();
-    };
-
-    return (
-      <>
-        <Button variant="success" onClick={handleShow}>
-          Learn More
-        </Button>
-
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{body}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="success" onClick={handleNavigate}>
-              Go to Documentation
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   };
 
   useEffect(() => {
@@ -151,131 +115,6 @@ const App: React.FC = () => {
                   <p className="lead">The ultimate platform for decentralized waqf and charity.</p>
                 </div>
               </section>
-
-              <section className="features-section text-center mb-5">
-                <div className="container">
-                  <div className="row">
-                    <div className="col-md-4 d-flex align-items-center justify-content-center">
-                      <div className="feature-card card p-4 border-0 shadow-sm text-center">
-                        <img
-                          src="/images/secure_icon-removebg-preview.png"
-                          alt="Secure Transactions"
-                          className="interactive-image"
-                        />
-                        <h3>Secure Transactions</h3>
-                        <p>Experience the safety and transparency of blockchain technology.</p>
-                        <FeatureModal
-                          title="Secure Transactions"
-                          body="Here are more details about secure transactions on our platform."
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 d-flex align-items-center justify-content-center">
-                      <div className="feature-card card p-4 border-0 shadow-sm text-center">
-                        <img
-                          src="/images/low_fee_icon-removebg-preview.png"
-                          alt="Low Fees"
-                          className="interactive-image"
-                        />
-                        <h3>Low Fees</h3>
-                        <p>Enjoy minimal transaction fees for all your donations.</p>
-                        <FeatureModal
-                          title="Low Fees"
-                          body="Learn more about how we keep transaction fees low on our platform."
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 d-flex align-items-center justify-content-center">
-                      <div className="feature-card card p-4 border-0 shadow-sm text-center">
-                        <img
-                          src="/images/global_icon-removebg-preview.png"
-                          alt="Global Reach"
-                          className="interactive-image"
-                        />
-                        <h3>Global Reach</h3>
-                        <p>Make a difference worldwide with our decentralized platform.</p>
-                        <FeatureModal
-                          title="Global Reach"
-                          body="Find out how you can contribute to global causes through our platform."
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section className="contact-sign mb-5">
-                <div className="container">
-                  <Row>
-                    <Col md={6}>
-                    {showSignIn ? (
-                    <div>
-                      <h4>Sign In</h4>
-                      <Form>
-                        <Form.Group controlId="formSignInEmail">
-                          <Form.Label>Email address</Form.Label>
-                          <Form.Control type="email" placeholder="Enter email" />
-                        </Form.Group>
-
-                        <Form.Group controlId="formSignInPassword">
-                          <Form.Label>Password</Form.Label>
-                          <Form.Control type="password" placeholder="Password" />
-                        </Form.Group>
-
-                        <Button variant="success" type="submit">
-                          Sign In
-                        </Button>
-                      </Form>
-                      <p className="mt-3">
-                        Do not have an account?{' '}
-                        <a href="#" onClick={() => setShowSignIn(false)}>
-                          Sign Up
-                        </a>
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <h4>Sign Up</h4>
-                      <Form>
-                        <Form.Group controlId="formSignUpEmail">
-                          <Form.Label>Email address</Form.Label>
-                          <Form.Control type="email" placeholder="Enter email" />
-                        </Form.Group>
-
-                        <Form.Group controlId="formSignUpPassword">
-                          <Form.Label>Password</Form.Label>
-                          <Form.Control type="password" placeholder="Password" />
-                        </Form.Group>
-
-                        <Form.Group controlId="formSignUpConfirmPassword">
-                          <Form.Label>Confirm Password</Form.Label>
-                          <Form.Control type="password" placeholder="Confirm Password" />
-                        </Form.Group>
-
-                        <Button variant="success" type="submit">
-                          Sign Up
-                        </Button>
-                      </Form>
-                      <p className="mt-3">
-                        Already have an account?{' '}
-                        <a href="#" onClick={() => setShowSignIn(true)}>
-                          Sign In
-                        </a>
-                      </p>
-                    </div>
-                  )}
-                    </Col>
-                    <Col md={6}>
-                      <h5>Contact Us</h5>
-                      <p>Email: support@lagoon.com</p>
-                      <p>Phone: +123 456 7890</p>
-                      
-                      <h5>Address</h5>
-                      <p>Lagoon Rd 20, City of Lagoon, Lagoontopia</p>
-                    </Col>
-                  </Row>
-                </div>
-              </section>
             </>
           ) : currentView === 'donation-list' ? (
             <DonationList />
@@ -297,8 +136,9 @@ const App: React.FC = () => {
 
       <style jsx>{`
         .palebg {
-          background: linear-gradient(to bottom, #f6ffde, #ffff);
+          background: #f6ffde;
         }
+
         .gradient-bg {
           background: linear-gradient(to bottom, #28a745, #f6ffde);
         }
@@ -318,13 +158,10 @@ const App: React.FC = () => {
 
         .interactive-image {
           max-width: 70%;
-          height: auto;
-          margin-bottom: 20px;
-          margin: 0 auto;
+          margin: 20px auto;
           display: block;
           transition: transform 0.3s ease;
         }
-
         .interactive-image:hover {
           transform: scale(1.1);
         }
@@ -332,7 +169,6 @@ const App: React.FC = () => {
         .hero-section {
           animation: fadeInUp 1s ease-in-out;
         }
-
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -344,67 +180,15 @@ const App: React.FC = () => {
           }
         }
 
-        .feature-card h3 {
-          transition: color 0.3s ease;
-        }
-
-        .feature-card:hover h3 {
-          color: #28a745;
-        }
-
-        .auth-contact-section {
-          max-width: 500px;
-          margin: 0 auto;
-        }
-
-        .auth-form {
-          background-color: #f6ffde;
-          padding: 20px;
-          border-radius: 10px;
-          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .contact-details {
-          margin-top: 40px;
-        }
-
-        .contact-details h5 {
-          font-weight: bold;
-        }
-
-        .contact-details p {
-          margin-bottom: 10px;
-        }
-
-        @media (max-width: 576px) {
-          .auth-contact-section {
-            padding: 20px;
-          }
-        }
-
-        @media (max-width: 576px) {
-          .features-section .row {
-            flex-direction: column;
-            align-items: center;
-          }
-
-          .feature-card {
-            margin-bottom: 20px;
-          }
-        }
-
         @media (max-width: 768px) {
           .navbar-collapse {
             background-color: #28a745;
             padding: 10px;
             border-radius: 5px;
-            transition: height 0.3s ease;
           }
           .navbar-nav .nav-link {
-            color: #fff !important;
+            color: #fff;
             padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, color 0.3s ease;
           }
           .navbar-nav .nav-link:hover {
             background-color: #218838;

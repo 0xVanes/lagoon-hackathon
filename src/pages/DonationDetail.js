@@ -172,22 +172,20 @@ const DonationDetail = ({ donation, onBack }) => {
                 return;
             }
     
+            if (!donationAmount || parseFloat(donationAmount) <= 0) {
+                setMessage('Please enter a valid donation amount');
+                return;
+            }
+    
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
     
             const lagoonNftContract = new ethers.Contract(lagoonNftAddress, lagoonNftAbi, signer);
     
-            let lagoonType = "Regular";
-            if (parseFloat(donationAmount) > 1100 && parseFloat(donationAmount) <= 2200) {
-                lagoonType = "Gold";
-            } else if (parseFloat(donationAmount) > 2200) {
-                lagoonType = "Diamond";
-            }
+            console.log(`Minting NFT for donation amount:`, donationAmount);
     
-            console.log(`Minting ${lagoonType} NFT for donation amount:`, donationAmount);
-    
-            const tx = await lagoonNftContract.mintNFT(address, lagoonType, {
+            const tx = await lagoonNftContract.mintNFT(address, ethers.utils.parseEther(donationAmount), {
                 gasLimit: 500000, 
             });
     
@@ -197,15 +195,15 @@ const DonationDetail = ({ donation, onBack }) => {
             console.log('Transaction receipt:', receipt);
     
             if (receipt.status === 1) {
-                setMessage(`${lagoonType} NFT minted successfully!`);
+                setMessage('NFT minted successfully!');
             } else {
-                setMessage(`${lagoonType} NFT minting failed. Please try again.`);
+                setMessage('NFT minting failed. Please try again.');
             }
         } catch (error) {
             console.error('Error during NFT minting:', error);
             setMessage('NFT minting failed.');
         }
-    };    
+    };        
 
     const handleWithdraw = async () => {
         try {
@@ -267,49 +265,50 @@ const DonationDetail = ({ donation, onBack }) => {
                 setMessage('Please connect your wallet first');
                 return;
             }
-
+    
             if (!donationAmount || parseFloat(donationAmount) <= 0) {
                 setMessage('Please enter a valid donation amount');
                 return;
             }
-
+    
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
-
+    
             const proposalContract = new ethers.Contract(proposalAddress, proposalAbi, signer);
-
+    
             const amountInWei = ethers.utils.parseEther(donationAmount);
             console.log('Attempting to donate:', {
                 proposalId: donation.id,
                 amountInWei: amountInWei.toString(),
                 address: proposalAddress,
             });
-
+    
             const tx = await proposalContract.donate(donation.id, {
                 value: amountInWei,
                 gasLimit: 500000, 
             });
-
+    
             console.log('Transaction submitted:', tx.hash);
-
+    
             const receipt = await tx.wait();
             console.log('Transaction receipt:', receipt);
-
+    
             if (receipt.status === 1) {
                 setMessage('Donation successful!');
+                window.location.reload();
             } else {
                 setMessage('Donation failed. Please try again.');
             }
         } catch (error) {
             console.error('Error during donation:', error);
-
+    
             let errorMessage = 'Donation failed.';
-
-
+    
             setMessage(errorMessage);
         }
     };
+    
 
     return (
         <div className="donation-detail container mt-4">
