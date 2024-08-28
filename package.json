@@ -22,7 +22,8 @@
     "react-tooltip": "^5.28.0",
     "swr": "^2.2.5",
     "viem": "2.9.31",
-    "wagmi": "^2.9.2"
+    "wagmi": "^2.9.2",
+    "web3": "^4.12.1"
   },
   "devDependencies": {
     "@types/node": "^18.19.42",

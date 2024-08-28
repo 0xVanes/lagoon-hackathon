@@ -167,15 +167,9 @@ const DonationList = () => {
           <Carousel className="mb-4">
             {searchedDonations.map((donation, index) => (
               <Carousel.Item key={index}>
-                <OverlayTrigger
-                  placement="top"
-                  overlay={<Tooltip id={`tooltip-top-${index}`}>{donation.title}</Tooltip>}
-                >
+                <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-top-${index}`}>{donation.title}</Tooltip>}>
                   <Card className="donation-card mb-4" onClick={() => handleSelectDonation(donation)}>
-                    <Card.Img
-                      variant="top"
-                      src={donation.image}
-                      alt={`Image for ${donation.title}`}
+                    <Card.Img variant="top" src={donation.image} alt={`Image for ${donation.title}`}
                       style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }}
                     />
                     <Card.Body>
@@ -202,15 +196,9 @@ const DonationList = () => {
               <div className="row">
                 {searchedDonations.map((donation, index) => (
                   <div key={index} className="col-md-6 mb-4">
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={<Tooltip id={`tooltip-top-${index}`}>{donation.title}</Tooltip>}
-                    >
+                    <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-top-${index}`}>{donation.title}</Tooltip>}>
                       <Card className="donation-card" onClick={() => handleSelectDonation(donation)}>
-                        <Card.Img
-                          variant="top"
-                          src={donation.image}
-                          alt={`Image for ${donation.title}`}
+                        <Card.Img variant="top" src={donation.image} alt={`Image for ${donation.title}`}
                           style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }}
                         />
                         <Card.Body>
@@ -233,9 +221,7 @@ const DonationList = () => {
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center">
-                <img
-                  src="/images/lagoonIconOnlyWhite.png"
-                  alt="Lagoon Image"
+                <img src="/images/lagoonIconOnlyWhite.png" alt="Lagoon Image"
                   style={{ maxWidth: '70%', height: 'auto', marginBottom: '20px' }}
                 />
                 <p>No donations available</p>

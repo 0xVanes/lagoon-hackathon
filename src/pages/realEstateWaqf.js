@@ -1,267 +1,183 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import { Button, Form, Alert } from 'react-bootstrap';
+import Web3 from 'web3';
 import RealEstateWaqfTokenData from './abi/RealEstateWaqfToken.json';
 
-const contractAddress = RealEstateWaqfTokenData.tokenAddress;
-const contractABI = RealEstateWaqfTokenData.tokenAbi;
+const tokenAbi = RealEstateWaqfTokenData.tokenAbi; // Ensure this is an array
+const CONTRACT_ADDRESS = RealEstateWaqfTokenData.tokenAddress; // Ensure this is a string
 
-const RealEstateWaqf = () => {
-  const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
+const App = () => {
+  const [account, setAccount] = useState('');
   const [contract, setContract] = useState(null);
+  const [proposalDescription, setProposalDescription] = useState('');
+  const [priceInRupiah, setPriceInRupiah] = useState('');
   const [proposals, setProposals] = useState([]);
-  const [newProposal, setNewProposal] = useState({
-    certificateNumber: '',
-    wakif: '',
-    usedFor: '',
-    nazir: '',
-    landAddress: '',
-    landWidth: '',
-    buildingWidth: '',
-    priceInUSD: ''
-  });
+  const [investors, setInvestors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (window.ethereum) {
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-      setProvider(web3Provider);
-      const signer = web3Provider.getSigner();
-      setSigner(signer);
-      const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
-      setContract(contractInstance);
-    } else {
-      alert('Please install MetaMask to use this feature');
-    }
+    loadWeb3();
+    loadBlockchainData();
   }, []);
 
-  const handleAddProposal = async () => {
-    if (contract) {
-      try {
-        const description = `
-          Certificate Number: ${newProposal.certificateNumber},
-          Wakif: ${newProposal.wakif},
-          Used For: ${newProposal.usedFor},
-          Nazir: ${newProposal.nazir},
-          Address: ${newProposal.landAddress},
-          Land Width: ${newProposal.landWidth} sqm,
-          Building Width: ${newProposal.buildingWidth} sqm
-        `;
-        const tx = await contract.addProposal(description, ethers.utils.parseUnits(newProposal.landWidth, 18), ethers.utils.parseUnits(newProposal.priceInUSD, 18));
-        await tx.wait();
-        alert('Proposal added successfully');
-        setNewProposal({
-          certificateNumber: '',
-          wakif: '',
-          usedFor: '',
-          nazir: '',
-          landAddress: '',
-          landWidth: '',
-          buildingWidth: '',
-          priceInUSD: ''
-        });
-      } catch (error) {
-        console.error(error);
-      }
+  const loadWeb3 = async () => {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+    } else {
+      window.alert('Please install MetaMask!');
     }
   };
 
-  const handleInputChange = (e) => {
-    setNewProposal({ ...newProposal, [e.target.name]: e.target.value });
-  };
+  const loadBlockchainData = async () => {
+    setLoading(true);
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+    setAccount(accounts[0]);
 
-  const fetchProposals = async () => {
-    if (contract) {
-      try {
-        const proposalCount = await contract.proposalCount();
-        const proposalsArray = [];
-        for (let i = 1; i <= proposalCount; i++) {
-          const proposal = await contract.proposals(i);
-          if (proposal.isValidated) {
-            proposalsArray.push(proposal);
-          }
-        }
-        setProposals(proposalsArray);
-      } catch (error) {
-        console.error(error);
+    if (!Array.isArray(tokenAbi) || !CONTRACT_ADDRESS) {
+      console.error("Invalid ABI or Contract Address");
+      setLoading(false);
+      return;
+    }
+
+    const landTokenization = new web3.eth.Contract(tokenAbi, CONTRACT_ADDRESS);
+    setContract(landTokenization);
+
+    const proposalCount = await landTokenization.methods.proposalCount().call();
+    const loadedProposals = [];
+    for (let i = 1; i <= proposalCount; i++) {
+      const proposal = await landTokenization.methods.proposals(i).call();
+      loadedProposals.push(proposal);
+    }
+    setProposals(loadedProposals);
+
+    const investorsData = [];
+    for (let i = 0; i < accounts.length; i++) {
+      const investorBalance = await landTokenization.methods.landTokenBalance(accounts[i]).call();
+      if (investorBalance > 0) {
+        investorsData.push({ address: accounts[i], balance: investorBalance });
       }
     }
+    setInvestors(investorsData);
+    setLoading(false);
   };
 
-  const handleVote = async (proposalId, support) => {
-    if (contract) {
-      try {
-        const tx = await contract.vote(proposalId, support);
-        await tx.wait();
-        alert('Vote submitted successfully');
-        fetchProposals(); // Refresh proposals after voting
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  const createProposal = async () => {
+    await contract.methods.createProposal(proposalDescription, priceInRupiah).send({ from: account });
   };
 
-  const handleValidateVote = async (proposalId) => {
-    if (contract) {
-      try {
-        const tx = await contract.validateVote(proposalId);
-        await tx.wait();
-        alert('Vote validated successfully');
-        fetchProposals(); // Refresh proposals after validation
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  const voteOnProposal = async (proposalId, support) => {
+    await contract.methods.voteOnProposal(proposalId, support).send({ from: account });
   };
 
-  const handleBuyToken = async (proposalId) => {
-    if (contract) {
-      try {
-        const tx = await contract.mintTokens(proposalId);
-        await tx.wait();
-        alert('Tokens minted and purchased successfully');
-        fetchProposals(); // Refresh proposals after minting tokens
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  const convertToToken = async (proposalId) => {
+    const proposal = proposals.find(p => p.id === proposalId);
+    await contract.methods.convertToToken(proposalId).send({ from: account, value: proposal.priceInRupiah });
   };
 
-  const handleVerifyCertificate = async () => {
-    if (contract) {
-      try {
-        const isVerified = await contract.verifyCertificate(newProposal.certificateNumber);
-        if (isVerified) {
-          alert('Certificate number is valid.');
-        } else {
-          alert('Certificate number is invalid.');
-        }
-      } catch (error) {
-        console.error(error);
-        alert('An error occurred during verification.');
-      }
-    }
+  const invest = async (proposalId, amount) => {
+    await contract.methods.invest(proposalId, amount).send({ from: account, value: amount });
   };
 
-  useEffect(() => {
-    fetchProposals();
-  }, [contract]);
+  const sellTokens = async (proposalId, amount) => {
+    await contract.methods.sellTokens(proposalId, amount).send({ from: account });
+  };
 
   return (
-    <div>
-      <h1>Land Tokenization</h1>
-      <Form>
-        <Form.Group>
-          <Form.Label>Certificate Number</Form.Label>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Form.Control
-              type="text"
-              name="certificateNumber"
-              value={newProposal.certificateNumber}
-              onChange={handleInputChange}
-              style={{ marginRight: '10px' }}
-            />
-            <Button variant="info" onClick={handleVerifyCertificate}>
-              Verify
-            </Button>
-          </div>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Wakif</Form.Label>
-          <Form.Control
-            type="text"
-            name="wakif"
-            value={newProposal.wakif}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Used For</Form.Label>
-          <Form.Control
-            type="text"
-            name="usedFor"
-            value={newProposal.usedFor}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Nazir</Form.Label>
-          <Form.Control
-            type="text"
-            name="nazir"
-            value={newProposal.nazir}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Address of Land Asset</Form.Label>
-          <Form.Control
-            type="text"
-            name="landAddress"
-            value={newProposal.landAddress}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Width of Land (in sqm)</Form.Label>
-          <Form.Control
-            type="text"
-            name="landWidth"
-            value={newProposal.landWidth}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Width of Building (in sqm)</Form.Label>
-          <Form.Control
-            type="text"
-            name="buildingWidth"
-            value={newProposal.buildingWidth}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Price in USD</Form.Label>
-          <Form.Control
-            type="text"
-            name="priceInUSD"
-            value={newProposal.priceInUSD}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Button variant="primary" onClick={handleAddProposal}>
-          Add Proposal
-        </Button>
-      </Form>
-      <h2>Existing Proposals</h2>
-      {proposals.length === 0 ? (
-        <Alert variant="warning">No validated proposals found</Alert>
-      ) : (
-        <ul>
-          {proposals.map((proposal, index) => (
-            <li key={index}>
-              {proposal.description} - {ethers.utils.formatUnits(proposal.landPrice, 18)} ETH 
-              (${ethers.utils.formatUnits(proposal.priceInUSD, 18)} USD) <br />
-              Created At: {new Date(proposal.createdAt * 1000).toLocaleString()} <br />
-              {proposal.isValidated && (
-                <>
-                  Vote Validated At: {new Date(proposal.voteValidatedAt * 1000).toLocaleString()} <br />
-                  <Button variant="success" onClick={() => handleBuyToken(index)}>Buy Token</Button>
-                </>
-              )}
-              {!proposal.isValidated && (
-                <div>
-                  <Button variant="primary" onClick={() => handleVote(index, true)}>Support</Button>
-                  <Button variant="danger" onClick={() => handleVote(index, false)}>Oppose</Button>
-                  <Button variant="secondary" onClick={() => handleValidateVote(index)}>Validate Vote</Button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: 'auto' }}>
+      <h1 style={{ textAlign: 'center', color: '#4CAF50' }}>Land Tokenization dApp</h1>
+      <p style={{ textAlign: 'center', fontStyle: 'italic' }}>Connected Account: {account}</p>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2 style={{ color: '#4CAF50' }}>Create Proposal</h2>
+        <input 
+          type="text" 
+          placeholder="Description" 
+          value={proposalDescription} 
+          onChange={(e) => setProposalDescription(e.target.value)} 
+          style={{ padding: '10px', width: '100%', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+        />
+        <input 
+          type="number" 
+          placeholder="Price in Rupiah" 
+          value={priceInRupiah} 
+          onChange={(e) => setPriceInRupiah(e.target.value)} 
+          style={{ padding: '10px', width: '100%', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+        />
+        <button 
+          onClick={createProposal} 
+          style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+        >
+          Create Proposal
+        </button>
+      </div>
+
+      <div>
+        <h2 style={{ color: '#4CAF50' }}>Proposals</h2>
+        {loading ? (
+          <p>Loading proposals...</p>
+        ) : (
+          proposals.map((proposal, index) => (
+            <div key={index} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginBottom: '10px' }}>
+              <p><strong>ID:</strong> {Number(proposal.id).toString()}</p>
+              <p><strong>Description:</strong> {proposal.description}</p>
+              <p><strong>Price in Rupiah:</strong> {Number(proposal.priceInRupiah).toString()}</p>
+              <p><strong>Support Votes:</strong> {Number(proposal.supportVotes).toString()}</p>
+              <p><strong>Token Supply:</strong> {Number(proposal.tokenSupply).toString()}</p>
+              <button 
+                onClick={() => voteOnProposal(proposal.id, true)} 
+                style={{ marginRight: '10px', padding: '5px 10px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+              >
+                Vote Support
+              </button>
+              <button 
+                onClick={() => voteOnProposal(proposal.id, false)} 
+                style={{ marginRight: '10px', padding: '5px 10px', backgroundColor: '#f44336', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#e53935'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#f44336'}
+              >
+                Vote Against
+              </button>
+              <button 
+                onClick={() => convertToToken(proposal.id)} 
+                style={{ marginRight: '10px', padding: '5px 10px', backgroundColor: '#2196F3', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#1976D2'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#2196F3'}
+              >
+                Convert to Token
+              </button>
+              <button 
+                onClick={() => invest(proposal.id, priceInRupiah)} 
+                style={{ padding: '5px 10px', backgroundColor: '#FF9800', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#FB8C00'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#FF9800'}
+              >
+                Invest
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div>
+        <h2 style={{ color: '#4CAF50' }}>Investors</h2>
+        {investors.length === 0 ? (
+          <p>No investors found.</p>
+        ) : (
+          investors.map((investor, index) => (
+            <div key={index} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginBottom: '10px' }}>
+              <p><strong>Address:</strong> {investor.address}</p>
+              <p><strong>ILAT Balance:</strong> {investor.balance}</p>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
 
-export default RealEstateWaqf;
+export default App;

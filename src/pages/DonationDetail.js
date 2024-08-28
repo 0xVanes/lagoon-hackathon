@@ -241,16 +241,11 @@ const DonationDetail = ({ donation, onBack }) => {
     };
 
     const iconButtonStyle = {
-        backgroundColor: '#40A578',
-        border: 'none',
-        color: '#fff',
-        borderRadius: '50%',
-        width: '40px',
-        height: '40px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: '0 5px',
+        backgroundColor: '#40A578', border: 'none',
+        color: '#fff', borderRadius: '50%',
+        width: '40px', height: '40px',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center', margin: '0 5px',
         transition: 'background-color 0.3s',
         fontSize: '18px',
     };
@@ -288,11 +283,7 @@ const DonationDetail = ({ donation, onBack }) => {
                 value: amountInWei,
                 gasLimit: 500000, 
             });
-    
-            console.log('Transaction submitted:', tx.hash);
-    
             const receipt = await tx.wait();
-            console.log('Transaction receipt:', receipt);
     
             if (receipt.status === 1) {
                 setMessage('Donation successful!');
@@ -338,10 +329,7 @@ const DonationDetail = ({ donation, onBack }) => {
                 <h2>Donate</h2>
                 <Form.Group controlId="donationAmount" className="mb-3">
                     <Form.Label>Enter Donation Amount (ISLM)</Form.Label>
-                    <Form.Control
-                        type="number"
-                        placeholder="Amount in ISLM"
-                        value={donationAmount}
+                    <Form.Control type="number" placeholder="Amount in ISLM" value={donationAmount}
                         onChange={(e) => setDonationAmount(e.target.value)}
                     />
                 </Form.Group>
@@ -367,6 +355,7 @@ const DonationDetail = ({ donation, onBack }) => {
                             onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor} onClick={handleWithdraw}>
                             Withdraw Funds
                         </Button>
+                        <p>2.5% of Fund will be deducted for our Fees</p>
                     </>
                 ) : (
                     <Alert variant="danger" className="mt-3">
@@ -380,11 +369,8 @@ const DonationDetail = ({ donation, onBack }) => {
                 )}
                 <div className="social-share-buttons d-flex justify-content-start mt-3">
                     {['facebook', 'whatsapp', 'twitter', 'instagram', 'link'].map(platform => (
-                        <button
-                            key={platform}
-                            onClick={() => handleShare(platform)}
-                            className="share-button"
-                            style={iconButtonStyle}
+                        <button key={platform} onClick={() => handleShare(platform)}
+                            className="share-button" style={iconButtonStyle}
                             onMouseOver={e => e.currentTarget.style.backgroundColor = hoverStyle.backgroundColor}
                             onMouseOut={e => e.currentTarget.style.backgroundColor = iconButtonStyle.backgroundColor}
                         >

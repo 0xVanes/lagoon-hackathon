@@ -39,10 +39,7 @@ const DonationForm = ({ onSubmit }) => {
       const goalString = goal.toString();
 
       const tx = await proposalContract.createProposal(
-        title,
-        description,
-        ethers.utils.parseEther(goalString),
-        beneficiary
+        title, description, ethers.utils.parseEther(goalString), beneficiary
       );
       await tx.wait();
 
@@ -83,10 +80,7 @@ const DonationForm = ({ onSubmit }) => {
       //await createProposal(title, description, goalInt, walletAddress);
 
       onSubmit({
-        title,
-        description,
-        goal: goalInt.toString(),
-        beneficiary: walletAddress,
+        title, description, goal: goalInt.toString(), beneficiary: walletAddress,
       });
 
       setTitle('');
@@ -105,41 +99,28 @@ const DonationForm = ({ onSubmit }) => {
       <Form onSubmit={handleSubmit} className="mb-4">
         <Form.Group controlId="formTitle" className="mb-3">
           <Form.Label>Title</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter title"
-            value={title}
+          <Form.Control type="text" placeholder="Enter title" value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group controlId="formDescription" className="mb-3">
           <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            placeholder="Enter description"
-            value={description}
+          <Form.Control as="textarea" rows={3} placeholder="Enter description" value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group controlId="formGoal" className="mb-3">
           <Form.Label>Donation Goal in ISLM</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="Enter goal"
-            value={goal}
+          <Form.Control type="number" placeholder="Enter goal" value={goal}
             onChange={(e) => setGoal(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group controlId="formWalletAddress" className="mb-3">
           <Form.Label>Beneficiary Wallet Address</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter wallet address"
-            value={walletAddress}
+          <Form.Control type="text" placeholder="Enter wallet address" value={walletAddress}
             onChange={(e) => setWalletAddress(e.target.value)}
           />
         </Form.Group>
@@ -147,6 +128,7 @@ const DonationForm = ({ onSubmit }) => {
         <Button className="custom-button" variant="success" type="submit" disabled={isLoading}>
           {isLoading ? <Spinner animation="border" size="sm" /> : 'Submit'}
         </Button>
+        <p>2.5% of the donation will be deducted for Fees.</p>
 
         {!isConnected && (
           <Alert variant="danger" className="mt-3">

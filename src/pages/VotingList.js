@@ -127,24 +127,18 @@ const VotingList = () => {
                             <Card.Text>
                                 Votes For: {proposal.votesFor} | Votes Against: {proposal.votesAgainst}
                             </Card.Text>
-                            <Button
-                                variant="success"
-                                onClick={() => voteOnProposal(proposal.id, true)}
+                            <Button variant="success" onClick={() => voteOnProposal(proposal.id, true)}
                                 disabled={loadingId === proposal.id || proposal.executed}
                             >
                                 {loadingId === proposal.id && !proposal.executed ? <Spinner size="sm" animation="border" /> : 'Support'}
                             </Button>
-                            <Button
-                                variant="danger"
-                                onClick={() => voteOnProposal(proposal.id, false)}
+                            <Button variant="danger" onClick={() => voteOnProposal(proposal.id, false)}
                                 disabled={loadingId === proposal.id || proposal.executed}
                             >
                                 {loadingId === proposal.id && !proposal.executed ? <Spinner size="sm" animation="border" /> : 'Oppose'}
                             </Button>
                             {!proposal.executed && (
-                                <Button
-                                    variant="warning"
-                                    onClick={() => executeProposal(proposal.id)}
+                                <Button variant="warning" onClick={() => executeProposal(proposal.id)}
                                     disabled={loadingId === proposal.id}
                                 >
                                     {loadingId === proposal.id ? <Spinner size="sm" animation="border" /> : 'Execute Proposal'}
@@ -155,9 +149,7 @@ const VotingList = () => {
                 ))
             ) : (
                 <div className="d-flex flex-column align-items-center">
-                <img
-                  src="/images/lagoonIconOnlyWhite.png"
-                  alt="Lagoon Image"
+                <img src="/images/lagoonIconOnlyWhite.png" alt="Lagoon Image"
                   style={{ maxWidth: '70%', height: 'auto', marginBottom: '20px' }}
                 />
                 <p>No Voting Available</p>
