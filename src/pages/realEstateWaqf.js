@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import RealEstateWaqfTokenData from './abi/RealEstateWaqfToken.json';
 
-const tokenAbi = RealEstateWaqfTokenData.tokenAbi; // Ensure this is an array
-const CONTRACT_ADDRESS = RealEstateWaqfTokenData.tokenAddress; // Ensure this is a string
+const tokenAbi = RealEstateWaqfTokenData.tokenAbi;
+const CONTRACT_ADDRESS = RealEstateWaqfTokenData.tokenAddress;
 
 const App = () => {
   const [account, setAccount] = useState('');
@@ -92,11 +92,35 @@ const App = () => {
         <h2 style={{ color: '#4CAF50' }}>Create Proposal</h2>
         <input 
           type="text" 
-          placeholder="Description" 
+          placeholder="Description (including what it is used for, the address of the land, area in sqm)" 
           value={proposalDescription} 
           onChange={(e) => setProposalDescription(e.target.value)} 
           style={{ padding: '10px', width: '100%', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
         />
+        <input 
+          type="text" 
+          placeholder="Certification" 
+          style={{ padding: '10px', width: '100%', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+        />
+        <button 
+          style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+        >
+          Verify
+        </button>
+        <input 
+          type="text" 
+          placeholder="Nazir's Address" 
+          style={{ padding: '10px', width: '100%', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+        />
+        <button 
+          style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+        >
+          Verify
+        </button>
         <input 
           type="number" 
           placeholder="Price in Rupiah" 
@@ -112,6 +136,7 @@ const App = () => {
         >
           Create Proposal
         </button>
+        <p>There will be a 2.5% fee for Transactions</p>
       </div>
 
       <div>
@@ -124,7 +149,7 @@ const App = () => {
               <p><strong>ID:</strong> {Number(proposal.id).toString()}</p>
               <p><strong>Description:</strong> {proposal.description}</p>
               <p><strong>Price in Rupiah:</strong> {Number(proposal.priceInRupiah).toString()}</p>
-              <p><strong>Support Votes:</strong> {Number(proposal.supportVotes).toString()}</p>
+              <p><strong>Support Votes:</strong> {Number(proposal.supportVotes).toString()} / {Number(proposal.totalVotes).toString()}</p>
               <p><strong>Token Supply:</strong> {Number(proposal.tokenSupply).toString()}</p>
               <button 
                 onClick={() => voteOnProposal(proposal.id, true)} 
@@ -152,11 +177,19 @@ const App = () => {
               </button>
               <button 
                 onClick={() => invest(proposal.id, priceInRupiah)} 
-                style={{ padding: '5px 10px', backgroundColor: '#FF9800', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                style={{ marginRight: '10px', padding: '5px 10px', backgroundColor: '#FF9800', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#FB8C00'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#FF9800'}
               >
                 Invest
+              </button>
+              <button 
+                onClick={() => sellTokens(proposal.id, priceInRupiah)} 
+                style={{ padding: '5px 10px', backgroundColor: '#FF9800', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#FB8C00'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#FF9800'}
+              >
+                Sell Tokens
               </button>
             </div>
           ))
@@ -171,7 +204,7 @@ const App = () => {
           investors.map((investor, index) => (
             <div key={index} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginBottom: '10px' }}>
               <p><strong>Address:</strong> {investor.address}</p>
-              <p><strong>ILAT Balance:</strong> {investor.balance}</p>
+              <p><strong>Token Balance:</strong> {Number(investor.balance).toString()}</p>
             </div>
           ))
         )}

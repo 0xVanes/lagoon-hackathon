@@ -172,10 +172,10 @@ const DonationDetail = ({ donation, onBack }) => {
                 return;
             }
     
-            if (!donationAmount || parseFloat(donationAmount) <= 0) {
-                setMessage('Please enter a valid donation amount');
-                return;
-            }
+            //if (!donationAmount || parseFloat(donationAmount) <= 0) {
+              //  setMessage('Please enter a valid donation amount');
+                //return;
+            //}
     
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send('eth_requestAccounts', []);
@@ -316,7 +316,7 @@ const DonationDetail = ({ donation, onBack }) => {
             <section className="donation-info mb-4">
                 <h2>Project Information</h2>
                 <p><strong>Total Raised:</strong> {raisedAmount} ISLM / {donation?.goal || "N/A"} ISLM Goal</p>
-                <p><strong>Number of Donors:</strong> {donorCount}</p> {/* Display the donor count */}
+                <p><strong>Number of Donors:</strong> {donorCount}</p>
                 <ul>
                     <li>We appreciate that you want to help us. For that, we will give you a reward of:</li>
                     <li>1100 ISLM – Will be given 10LGN</li>

@@ -274,7 +274,6 @@ const Documentation: React.FC = () => {
           <p>
             Non-Fungible Tokens (NFTs) play a crucial role in the Lagoon ecosystem. They represent ownership and contributions, providing a unique way for donors to be recognized and for recipients to showcase their gratitude.
           </p>
-          <p>We are working with IDNFT to provide cool NFTs.</p>
         </div>
       ),
     },
